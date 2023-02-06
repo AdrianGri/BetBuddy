@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 import AddLeg from '../components/AddLeg'
 import LegBlock from '../components/LegBlock'
+import BetBlock from '../components/BetBlock'
 
 const Home: NextPage = () => {
   const [legs, setLegs] = useState<JSX.Element[]>([]);
@@ -23,6 +24,7 @@ const Home: NextPage = () => {
           setLegs([...legs, <LegBlock />]);
         }}>
           <AddLeg />
+          <BetBlock />
         </div>
         <h1 className="text-6xl font-bold">
           Welcome to{' '}
