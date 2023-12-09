@@ -10,10 +10,10 @@ import { playerSearchOptions } from '../utils/globals'
 
 const Home: NextPage = () => {
   const [legs, setLegs] = useState<{ id: string, element: JSX.Element}[]>([]);
-  const [searchQuery, setSearchQuery] = useState<Option | Option[] | null | undefined>(null);
   const [allOdds, setAllOdds] = useState<{ id: string, odds: number}[]>([]);
   const [totalOdds, setTotalOdds] = useState<number>(0);
   const [toDelete, setToDelete] = useState('');
+
 
   const deleteRow = (id: string) => {
     console.log('deleteRow', id)
@@ -38,7 +38,10 @@ const Home: NextPage = () => {
   }
 
   useEffect(() => {
-    if (allOdds.length === 0) return;
+    if (allOdds.length === 0) {
+      setTotalOdds(0);
+      return;
+    };
 
     let total = 1;
     allOdds.forEach((odd) => {
@@ -47,13 +50,13 @@ const Home: NextPage = () => {
     setTotalOdds(Math.round(total * 100));
   }, [allOdds])
 
-  useEffect(() => {
-    if (!searchQuery) return;
-    const query = searchQuery as Option;
+  const setSearchQuery = (query: Option | Option[] | null | undefined) => {
+    if (!query) return;
+    const queryOption = query as Option;
 
     const newId = Math.random().toString();
-    setLegs([...legs, { id: newId, element: <LegBlock id={newId} playerId={query.value} key={newId} deleteRow={(id: string) => setToDelete(id)} addToTotal={addToTotal} />}])
-  }, [searchQuery])
+    setLegs([...legs, { id: newId, element: <LegBlock id={newId} playerId={queryOption.value} key={newId} deleteRow={(id: string) => setToDelete(id)} addToTotal={addToTotal} />}])
+  }
 
   useEffect(() => console.log('legs', legs), [legs])
 
@@ -66,7 +69,7 @@ const Home: NextPage = () => {
 
       <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
         <Dropdown
-          searchQuery={searchQuery}
+          searchQuery={undefined}
           setSearchQuery={setSearchQuery}
           searchable={true}
           options={playerSearchOptions}
