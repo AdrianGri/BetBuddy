@@ -10,7 +10,6 @@ import Dropdown from '../components/Dropdown'
 import { playerSearchOptions } from '../utils/globals'
 
 const Home: NextPage = () => {
-  const [legs, setLegs] = useState<{ id: string, element: JSX.Element}[]>([]);
   const [allOdds, setAllOdds] = useState<{ playerId: string, odds: number}[]>([]);
   const [totalOdds, setTotalOdds] = useState<number>(0);
 
@@ -35,9 +34,9 @@ const Home: NextPage = () => {
   }
 
   const deleteRow = (index: number) => {
-    const newLegs = [...legs];
-    newLegs.splice(index, 1);
-    setLegs(newLegs);
+    const newOdds = [...allOdds];
+    newOdds.splice(index, 1);
+    setAllOdds(newOdds);
   }
 
   const updateRow = (index: number, playerId: string, odds: number) => {
@@ -45,8 +44,6 @@ const Home: NextPage = () => {
     newAllOdds[index] = { playerId, odds };
     setAllOdds(newAllOdds);
   }
-
-  useEffect(() => console.log('legs', legs), [legs])
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center py-2">
