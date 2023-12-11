@@ -1,5 +1,6 @@
+'use client';
 import { Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 const players = require('../data/ActivePlayers.json');
 const playerGameStats = require('../data/PlayerToGames.json');
@@ -7,11 +8,11 @@ const playerGameStats = require('../data/PlayerToGames.json');
 interface Props {
   id: string
   playerId: string
-  deleteRow: (id: string) => void
-  addToTotal: (id: string, odds: number) => void
+  deleteRow: (index: number) => void
+  updateRow: (index: number, playerId: string, odds: number) => void
 }
 
-const LegBlock = ({ id, playerId, deleteRow, addToTotal }: Props) => {
+const LegBlock = ({ id, playerId, deleteRow, updateRow }: Props) => {
   const [formData, setFormData] = useState<{
     numGames: number | undefined,
     stat: string | undefined,
@@ -42,12 +43,12 @@ const LegBlock = ({ id, playerId, deleteRow, addToTotal }: Props) => {
 
     const odd = (count / total) * 100;
     setOdds(Math.round(odd));
-    addToTotal(id, odd);
+    updateRow(parseInt(id), playerId, Math.round(odd));
   }, [formData])
 
   return(
     <div className="flex flex-row justify-between w-[800px] h-[60px] gap-4 items-center">
-      <div className="flex flex-row p-5 justify-between items-center bg-[#e2e2e2] w-full h-full rounded-lg">
+      <div className="flex flex-row p-5 justify-between items-center bg-[#e2e2e2] w-full h-full rounded-lg shadow-sm">
         <div className="flex flex-row items-center">
           <p className="text-lg font-semibold">{player}</p>
         </div>
@@ -100,10 +101,10 @@ const LegBlock = ({ id, playerId, deleteRow, addToTotal }: Props) => {
           />
         </div>
       </div>
-      <div className="flex flex-row justify-center items-center min-w-[60px] h-full bg-[#e2e2e2] rounded-lg">
+      <div className="flex flex-row justify-center items-center min-w-[60px] h-full bg-[#e2e2e2] rounded-lg shadow-md">
         <p className="text-lg font-semibold">{odds}%</p>
       </div>
-      <Trash2 className="cursor-pointer" onClick={() => deleteRow(id)} />
+      <Trash2 className="cursor-pointer" onClick={() => deleteRow(parseInt(id))} />
     </div>
   );
 };

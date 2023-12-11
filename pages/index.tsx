@@ -1,7 +1,8 @@
+'use client';
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Option } from 'react-tailwindcss-select/dist/components/type'
 import AddLeg from '../components/AddLeg'
 import LegBlock from '../components/LegBlock'
@@ -10,32 +11,8 @@ import { playerSearchOptions } from '../utils/globals'
 
 const Home: NextPage = () => {
   const [legs, setLegs] = useState<{ id: string, element: JSX.Element}[]>([]);
-  const [allOdds, setAllOdds] = useState<{ id: string, odds: number}[]>([]);
+  const [allOdds, setAllOdds] = useState<{ playerId: string, odds: number}[]>([]);
   const [totalOdds, setTotalOdds] = useState<number>(0);
-  const [toDelete, setToDelete] = useState('');
-
-
-  const deleteRow = (id: string) => {
-    console.log('deleteRow', id)
-    console.log('legs', legs)
-    const newLegs = legs.filter((leg) => {
-      return leg.id !== id;
-    });
-    setLegs(newLegs);
-
-    setAllOdds(allOdds.filter((odd) => {
-      return odd.id !== id;
-    }));
-  }
-
-  useEffect(() => deleteRow(toDelete), [toDelete])
-
-  const addToTotal = (id: string, odds: number) => {
-    const newOdds = allOdds.filter((odd) => {
-      return odd.id !== id;
-    });
-    setAllOdds([...newOdds, { id, odds }]);
-  }
 
   useEffect(() => {
     if (allOdds.length === 0) {
@@ -54,8 +31,19 @@ const Home: NextPage = () => {
     if (!query) return;
     const queryOption = query as Option;
 
-    const newId = Math.random().toString();
-    setLegs([...legs, { id: newId, element: <LegBlock id={newId} playerId={queryOption.value} key={newId} deleteRow={(id: string) => setToDelete(id)} addToTotal={addToTotal} />}])
+    setAllOdds([...allOdds, { playerId: queryOption.value, odds: 0 }]);
+  }
+
+  const deleteRow = (index: number) => {
+    const newLegs = [...legs];
+    newLegs.splice(index, 1);
+    setLegs(newLegs);
+  }
+
+  const updateRow = (index: number, playerId: string, odds: number) => {
+    const newAllOdds = [...allOdds];
+    newAllOdds[index] = { playerId, odds };
+    setAllOdds(newAllOdds);
   }
 
   useEffect(() => console.log('legs', legs), [legs])
@@ -75,9 +63,9 @@ const Home: NextPage = () => {
           options={playerSearchOptions}
         />
         <div className="flex flex-col gap-2 my-4">
-          {legs.map((leg) => {
-            return leg.element;
-            })}
+          {allOdds.map((odd, index) => {
+            return <LegBlock id={index.toString()} playerId={odd.playerId} key={index.toString()} deleteRow={deleteRow} updateRow={updateRow} />
+          })}
         </div>
         <div className="flex flex-row justify-between w-[800px] h-[60px] gap-4 items-center">
           <div className="flex flex-row p-5 justify-between items-center bg-[#e2e2e2] w-full h-full rounded-lg">
